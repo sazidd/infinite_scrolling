@@ -5,18 +5,26 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_test/model/post.dart';
 import 'package:bloc_test/model/todo.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
 
 part 'post_event.dart';
 part 'post_state.dart';
 
-class PostBloc extends Bloc<PostEvent, PostState> {
+class PostBloc extends Bloc<PostEvent, PostState> with ChangeNotifier {
   final http.Client httpClient;
   final http.Client httpClientTodo;
 
   PostBloc({@required this.httpClient, @required this.httpClientTodo})
       : super(const PostState());
+
+  String majorOneName = '';
+
+  addMajorOne(String majorOneNameTemp) {
+    majorOneName = majorOneNameTemp;
+    notifyListeners();
+  }
 
   @override
   Stream<PostState> mapEventToState(PostEvent event) async* {

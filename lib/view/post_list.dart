@@ -4,6 +4,7 @@ import 'package:bloc_test/widget/post_list_item.dart';
 import 'package:bloc_test/widget/todo_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 class PostsList extends StatefulWidget {
   @override
@@ -21,62 +22,71 @@ class _PostsListState extends State<PostsList> {
     _postScrollController.addListener(_onScrollPost);
     _todoScrollController.addListener(_onScrollTodo);
     _postBloc = context.read<PostBloc>();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<PostBloc>(context, listen: false).addMajorOne("Karim");
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<PostBloc, PostState>(
-      listener: (context, state) {
-        if (!state.hasReachedMax && _isBottomPost && _isBottomTodo) {
-          _postBloc.add(PostFetched());
-        }
-      },
-      builder: (context, state) {
-        switch (state.status) {
-          case APIStatus.failure:
-            return const Center(child: Text('failed to fetch posts'));
-          case APIStatus.success:
-            if (state.posts.isEmpty) {
-              return const Center(child: Text('no posts'));
-            }
-            return Column(
-              children: [
-                state.todos[1].id == state.todos[0].id
-                    ? Expanded(
-                        child: ListView.builder(
-                          itemBuilder: (BuildContext context, int index) {
-                            return index >= state.posts.length
-                                ? BottomLoader()
-                                : PostListItem(post: state.posts[index]);
-                          },
-                          itemCount: state.hasReachedMax
-                              ? state.posts.length
-                              : state.posts.length + 1,
-                          controller: _postScrollController,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("${Provider.of<PostBloc>(context).majorOneName}"),
+        centerTitle: true,
+      ),
+      body: BlocConsumer<PostBloc, PostState>(
+        listener: (context, state) {
+          if (!state.hasReachedMax && _isBottomPost && _isBottomTodo) {
+            _postBloc.add(PostFetched());
+          }
+        },
+        builder: (context, state) {
+          switch (state.status) {
+            case APIStatus.failure:
+              return const Center(child: Text('failed to fetch posts'));
+            case APIStatus.success:
+              if (state.posts.isEmpty) {
+                return const Center(child: Text('no posts'));
+              }
+              return Column(
+                children: [
+                  state.todos[1].id == state.todos[0].id
+                      ? Expanded(
+                          child: ListView.builder(
+                            itemBuilder: (BuildContext context, int index) {
+                              return index >= state.posts.length
+                                  ? BottomLoader()
+                                  : PostListItem(post: state.posts[index]);
+                            },
+                            itemCount: state.hasReachedMax
+                                ? state.posts.length
+                                : state.posts.length + 1,
+                            controller: _postScrollController,
+                          ),
+                        )
+                      : Center(
+                          child: Text("${state.id}"),
                         ),
-                      )
-                    : Center(
-                        child: Text("${state.id}"),
-                      ),
-                Expanded(
-                  child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      return index >= state.todos.length
-                          ? BottomLoader()
-                          : TodoListItem(todo: state.todos[index]);
-                    },
-                    itemCount: state.hasReachedMax
-                        ? state.todos.length
-                        : state.todos.length + 1,
-                    controller: _todoScrollController,
-                  ),
-                )
-              ],
-            );
-          default:
-            return const Center(child: CircularProgressIndicator());
-        }
-      },
+                  Expanded(
+                    child: ListView.builder(
+                      itemBuilder: (context, index) {
+                        return index >= state.todos.length
+                            ? BottomLoader()
+                            : TodoListItem(todo: state.todos[index]);
+                      },
+                      itemCount: state.hasReachedMax
+                          ? state.todos.length
+                          : state.todos.length + 1,
+                      controller: _todoScrollController,
+                    ),
+                  )
+                ],
+              );
+            default:
+              return const Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
     );
   }
 
