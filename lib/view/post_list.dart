@@ -41,19 +41,23 @@ class _PostsListState extends State<PostsList> {
             }
             return Column(
               children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemBuilder: (BuildContext context, int index) {
-                      return index >= state.posts.length
-                          ? BottomLoader()
-                          : PostListItem(post: state.posts[index]);
-                    },
-                    itemCount: state.hasReachedMax
-                        ? state.posts.length
-                        : state.posts.length + 1,
-                    controller: _postScrollController,
-                  ),
-                ),
+                state.todos[1].id == state.todos[0].id
+                    ? Expanded(
+                        child: ListView.builder(
+                          itemBuilder: (BuildContext context, int index) {
+                            return index >= state.posts.length
+                                ? BottomLoader()
+                                : PostListItem(post: state.posts[index]);
+                          },
+                          itemCount: state.hasReachedMax
+                              ? state.posts.length
+                              : state.posts.length + 1,
+                          controller: _postScrollController,
+                        ),
+                      )
+                    : Center(
+                        child: Text("${state.id}"),
+                      ),
                 Expanded(
                   child: ListView.builder(
                     itemBuilder: (context, index) {

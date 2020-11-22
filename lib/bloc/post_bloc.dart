@@ -31,15 +31,18 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       if (state.status == APIStatus.initial) {
         final posts = await _fetchPosts(0, 10);
         final todos = await _fetchTodos(0, 10);
+        final id = todos[1].id;
         return state.copyWith(
           status: APIStatus.success,
           posts: posts,
           todos: todos,
           hasReachedMax: false,
+          id: id,
         );
       }
       final posts = await _fetchPosts(state.posts.length, 10);
       final todos = await _fetchTodos(state.todos.length, 10);
+      final id = todos[1].id;
       return posts.isEmpty && todos.isEmpty
           ? state.copyWith(hasReachedMax: true)
           : state.copyWith(
@@ -47,6 +50,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
               posts: List.of(state.posts)..addAll(posts),
               todos: List.of(state.todos)..addAll(todos),
               hasReachedMax: false,
+              id: id,
             );
     } on Exception {
       return state.copyWith(status: APIStatus.failure);
