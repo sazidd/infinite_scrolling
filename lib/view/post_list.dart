@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bloc_test/bloc/post_bloc.dart';
 import 'package:bloc_test/view/filter_page.dart';
 import 'package:bloc_test/widget/bottom_loader.dart';
@@ -19,28 +17,28 @@ class _PostsListState extends State<PostsList> {
   final _todoScrollController = ScrollController();
   PostBloc _postBloc;
 
-  List<String> countList = [
-    "One",
-    "Two",
-    "Three",
-    "Four",
-    "Five",
-    "Six",
-    "Seven",
-    "Eight",
-    "Nine",
-    "Ten",
-    "Eleven",
-    "Tweleve",
-    "Thirteen",
-    "Fourteen",
-    "Fifteen",
-    "Sixteen",
-    "Seventeen",
-    "Eighteen",
-    "Nineteen",
-    "Twenty"
-  ];
+  // List<String> countList = [
+  //   "One",
+  //   "Two",
+  //   "Three",
+  //   "Four",
+  //   "Five",
+  //   "Six",
+  //   "Seven",
+  //   "Eight",
+  //   "Nine",
+  //   "Ten",
+  //   "Eleven",
+  //   "Tweleve",
+  //   "Thirteen",
+  //   "Fourteen",
+  //   "Fifteen",
+  //   "Sixteen",
+  //   "Seventeen",
+  //   "Eighteen",
+  //   "Nineteen",
+  //   "Twenty"
+  // ];
 
   List<String> selectedCountList = [];
 
@@ -85,7 +83,7 @@ class _PostsListState extends State<PostsList> {
               return RefreshIndicator(
                 child: Column(
                   children: [
-                    selectedCountList == null || selectedCountList.length == 0
+                    state.countList == null || state.countList == 0
                         ? Expanded(
                             child: Center(
                             child: Text("No Text Selected"),
@@ -105,20 +103,21 @@ class _PostsListState extends State<PostsList> {
                       children: [
                         FlatButton(
                           onPressed: () async {
-                            _postBloc.add(PostFetched(variable: 10));
-                            // var list = await Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => FilterPage(
-                            //       allTextList: countList,
-                            //     ),
-                            //   ),
-                            // );
-                            // if (list != null) {
-                            //   setState(() {
-                            //     selectedCountList = List.from(list);
-                            //   });
-                            // }
+                            print(state.countList.first);
+                            // _postBloc.add(PostFetched(variable: 100));
+                            var list = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => FilterPage(
+                                  allTextList: state.countList,
+                                ),
+                              ),
+                            );
+                            if (list != null) {
+                              setState(() {
+                                selectedCountList = List.from(list);
+                              });
+                            }
                           },
                           child: Text("Filter Page"),
                         ),
@@ -163,6 +162,7 @@ class _PostsListState extends State<PostsList> {
                 onRefresh: () async {
                   state.posts = [];
                   state.todos = [];
+                  state.countList = [];
                   BlocProvider.of<PostBloc>(context).add(PostFetched());
                 },
               );

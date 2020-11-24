@@ -9,6 +9,7 @@ class PostState extends Equatable {
     this.todos = const <Todo>[],
     this.hasReachedMax = false,
     this.id,
+    this.countList,
   });
 
   final APIStatus status;
@@ -16,6 +17,7 @@ class PostState extends Equatable {
   List<Todo> todos;
   final bool hasReachedMax;
   final int id;
+  List<String> countList;
 
   PostState copyWith({
     APIStatus status,
@@ -23,6 +25,7 @@ class PostState extends Equatable {
     List<Todo> todos,
     bool hasReachedMax,
     int id,
+    List<String> countList,
   }) {
     return PostState(
       status: status ?? this.status,
@@ -30,10 +33,11 @@ class PostState extends Equatable {
       todos: todos ?? this.todos,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       id: id,
+      countList: countList ?? this.countList,
     );
   }
 
   @override
-  // TODO: implement props
-  List<Object> get props => [status, posts, todos, hasReachedMax, id];
+  List<Object> get props =>
+      [status, posts, todos, hasReachedMax, id, countList];
 }

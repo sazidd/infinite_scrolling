@@ -6,7 +6,9 @@ abstract class PostEvent extends Equatable {
 }
 
 class PostFetched extends PostEvent {
-  final int variable;
+  // int variable;
 
-  PostFetched({this.variable});
+  // PostFetched({this.variable});
+
+  //PostFetched({this.countList});
 }

@@ -29,7 +29,7 @@ class PostBloc extends Bloc<PostEvent, PostState> with ChangeNotifier {
   @override
   Stream<PostState> mapEventToState(PostEvent event) async* {
     if (event is PostFetched) {
-      print(event.variable);
+      // print(event.variable);
       yield await _mapPostFetchedToState(state);
     }
   }
@@ -40,6 +40,7 @@ class PostBloc extends Bloc<PostEvent, PostState> with ChangeNotifier {
       if (state.status == APIStatus.initial) {
         final posts = await _fetchPosts(0, 10, "0", 0);
         final todos = await _fetchTodos(0, 10);
+        final count = countList;
         final id = todos[1].id;
         return state.copyWith(
           status: APIStatus.success,
@@ -47,10 +48,12 @@ class PostBloc extends Bloc<PostEvent, PostState> with ChangeNotifier {
           todos: todos,
           hasReachedMax: false,
           id: id,
+          countList: count,
         );
       }
       final posts = await _fetchPosts(state.posts.length, 10, "0", 0.0);
       final todos = await _fetchTodos(state.todos.length, 10);
+      final count = countList;
       final id = todos[1].id;
       return posts.isEmpty && todos.isEmpty
           ? state.copyWith(hasReachedMax: true)
@@ -60,6 +63,7 @@ class PostBloc extends Bloc<PostEvent, PostState> with ChangeNotifier {
               todos: List.of(state.todos)..addAll(todos),
               hasReachedMax: false,
               id: id,
+              countList: count,
             );
     } on Exception {
       return state.copyWith(status: APIStatus.failure);
@@ -90,4 +94,27 @@ class PostBloc extends Bloc<PostEvent, PostState> with ChangeNotifier {
       throw Exception();
     }
   }
+
+  List<String> countList = [
+    "One",
+    "Two",
+    "Three",
+    "Four",
+    "Five",
+    "Six",
+    "Seven",
+    "Eight",
+    "Nine",
+    "Ten",
+    "Eleven",
+    "Tweleve",
+    "Thirteen",
+    "Fourteen",
+    "Fifteen",
+    "Sixteen",
+    "Seventeen",
+    "Eighteen",
+    "Nineteen",
+    "Twenty",
+  ];
 }
