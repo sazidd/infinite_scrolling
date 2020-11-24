@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:bloc_test/bloc/post_bloc.dart';
+import 'package:bloc_test/view/filter_page.dart';
 import 'package:bloc_test/widget/bottom_loader.dart';
 import 'package:bloc_test/widget/post_list_item.dart';
 import 'package:bloc_test/widget/todo_list_item.dart';
@@ -16,6 +19,31 @@ class _PostsListState extends State<PostsList> {
   final _todoScrollController = ScrollController();
   PostBloc _postBloc;
 
+  List<String> countList = [
+    "One",
+    "Two",
+    "Three",
+    "Four",
+    "Five",
+    "Six",
+    "Seven",
+    "Eight",
+    "Nine",
+    "Ten",
+    "Eleven",
+    "Tweleve",
+    "Thirteen",
+    "Fourteen",
+    "Fifteen",
+    "Sixteen",
+    "Seventeen",
+    "Eighteen",
+    "Nineteen",
+    "Twenty"
+  ];
+
+  List<String> selectedCountList = [];
+
   @override
   void initState() {
     super.initState();
@@ -32,6 +60,12 @@ class _PostsListState extends State<PostsList> {
     return Scaffold(
       appBar: AppBar(
         title: Text("${Provider.of<PostBloc>(context).majorOneName}"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.filter),
+            onPressed: () {},
+          ),
+        ],
         centerTitle: true,
       ),
       body: BlocConsumer<PostBloc, PostState>(
@@ -48,40 +82,124 @@ class _PostsListState extends State<PostsList> {
               if (state.posts.isEmpty) {
                 return const Center(child: Text('no posts'));
               }
-              return Column(
-                children: [
-                  state.todos[1].id == state.todos[0].id
-                      ? Expanded(
-                          child: ListView.builder(
-                            itemBuilder: (BuildContext context, int index) {
-                              return index >= state.posts.length
-                                  ? BottomLoader()
-                                  : PostListItem(post: state.posts[index]);
-                            },
-                            itemCount: state.hasReachedMax
-                                ? state.posts.length
-                                : state.posts.length + 1,
-                            controller: _postScrollController,
+              return RefreshIndicator(
+                child: Column(
+                  children: [
+                    selectedCountList == null || selectedCountList.length == 0
+                        ? Expanded(
+                            child: Center(
+                            child: Text("No Text Selected"),
+                          ))
+                        : Expanded(
+                            child: ListView.separated(
+                                itemBuilder: (context, index) {
+                                  return ListTile(
+                                    title: Text(selectedCountList[index]),
+                                  );
+                                },
+                                separatorBuilder: (context, index) => Divider(),
+                                itemCount: selectedCountList.length),
                           ),
-                        )
-                      : Center(
-                          child: Text("${state.id}"),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        FlatButton(
+                          onPressed: () async {
+                            _postBloc.add(PostFetched(variable: 10));
+                            // var list = await Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => FilterPage(
+                            //       allTextList: countList,
+                            //     ),
+                            //   ),
+                            // );
+                            // if (list != null) {
+                            //   setState(() {
+                            //     selectedCountList = List.from(list);
+                            //   });
+                            // }
+                          },
+                          child: Text("Filter Page"),
                         ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemBuilder: (context, index) {
-                        return index >= state.todos.length
-                            ? BottomLoader()
-                            : TodoListItem(todo: state.todos[index]);
-                      },
-                      itemCount: state.hasReachedMax
-                          ? state.todos.length
-                          : state.todos.length + 1,
-                      controller: _todoScrollController,
+                        FlatButton(
+                          onPressed: () {},
+                          child: Text("Filter Dialog"),
+                        ),
+                      ],
                     ),
-                  )
-                ],
+                    state.todos[1].id == state.todos[0].id
+                        ? Expanded(
+                            child: ListView.builder(
+                              itemBuilder: (BuildContext context, int index) {
+                                return index >= state.posts.length
+                                    ? BottomLoader()
+                                    : PostListItem(post: state.posts[index]);
+                              },
+                              itemCount: state.hasReachedMax
+                                  ? state.posts.length
+                                  : state.posts.length + 1,
+                              controller: _postScrollController,
+                            ),
+                          )
+                        : Center(
+                            child: Text("${state.id}"),
+                          ),
+                    Expanded(
+                      child: ListView.builder(
+                        itemBuilder: (context, index) {
+                          return index >= state.todos.length
+                              ? BottomLoader()
+                              : TodoListItem(todo: state.todos[index]);
+                        },
+                        itemCount: state.hasReachedMax
+                            ? state.todos.length
+                            : state.todos.length + 1,
+                        controller: _todoScrollController,
+                      ),
+                    )
+                  ],
+                ),
+                onRefresh: () async {
+                  state.posts = [];
+                  state.todos = [];
+                  BlocProvider.of<PostBloc>(context).add(PostFetched());
+                },
               );
+            // return Column(
+            //   children: [
+            //     state.todos[1].id == state.todos[0].id
+            //         ? Expanded(
+            //             child: ListView.builder(
+            //               itemBuilder: (BuildContext context, int index) {
+            //                 return index >= state.posts.length
+            //                     ? BottomLoader()
+            //                     : PostListItem(post: state.posts[index]);
+            //               },
+            //               itemCount: state.hasReachedMax
+            //                   ? state.posts.length
+            //                   : state.posts.length + 1,
+            //               controller: _postScrollController,
+            //             ),
+            //           )
+            //         : Center(
+            //             child: Text("${state.id}"),
+            //           ),
+            //     Expanded(
+            //       child: ListView.builder(
+            //         itemBuilder: (context, index) {
+            //           return index >= state.todos.length
+            //               ? BottomLoader()
+            //               : TodoListItem(todo: state.todos[index]);
+            //         },
+            //         itemCount: state.hasReachedMax
+            //             ? state.todos.length
+            //             : state.todos.length + 1,
+            //         controller: _todoScrollController,
+            //       ),
+            //     )
+            //   ],
+            // );
             default:
               return const Center(child: CircularProgressIndicator());
           }

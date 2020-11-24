@@ -17,7 +17,7 @@ class PostBloc extends Bloc<PostEvent, PostState> with ChangeNotifier {
   final http.Client httpClientTodo;
 
   PostBloc({@required this.httpClient, @required this.httpClientTodo})
-      : super(const PostState());
+      : super(PostState());
 
   String majorOneName = '';
 
@@ -29,6 +29,7 @@ class PostBloc extends Bloc<PostEvent, PostState> with ChangeNotifier {
   @override
   Stream<PostState> mapEventToState(PostEvent event) async* {
     if (event is PostFetched) {
+      print(event.variable);
       yield await _mapPostFetchedToState(state);
     }
   }
@@ -37,7 +38,7 @@ class PostBloc extends Bloc<PostEvent, PostState> with ChangeNotifier {
     if (state.hasReachedMax) return state;
     try {
       if (state.status == APIStatus.initial) {
-        final posts = await _fetchPosts(0, 10);
+        final posts = await _fetchPosts(0, 10, "0", 0);
         final todos = await _fetchTodos(0, 10);
         final id = todos[1].id;
         return state.copyWith(
@@ -48,7 +49,7 @@ class PostBloc extends Bloc<PostEvent, PostState> with ChangeNotifier {
           id: id,
         );
       }
-      final posts = await _fetchPosts(state.posts.length, 10);
+      final posts = await _fetchPosts(state.posts.length, 10, "0", 0.0);
       final todos = await _fetchTodos(state.todos.length, 10);
       final id = todos[1].id;
       return posts.isEmpty && todos.isEmpty
@@ -65,7 +66,10 @@ class PostBloc extends Bloc<PostEvent, PostState> with ChangeNotifier {
     }
   }
 
-  Future<List<Post>> _fetchPosts(int startIndex, int limit) async {
+  Future<List<Post>> _fetchPosts(
+      int startIndex, int limit, String id, double price) async {
+    print(id);
+    print(price);
     var response = await http.get(
         "https://jsonplaceholder.typicode.com/posts?_start=$startIndex&_limit=$limit");
     if (response.statusCode == 200) {

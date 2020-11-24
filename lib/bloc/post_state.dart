@@ -3,7 +3,7 @@ part of 'post_bloc.dart';
 enum APIStatus { initial, success, failure }
 
 class PostState extends Equatable {
-  const PostState({
+  PostState({
     this.status = APIStatus.initial,
     this.posts = const <Post>[],
     this.todos = const <Todo>[],
@@ -12,8 +12,8 @@ class PostState extends Equatable {
   });
 
   final APIStatus status;
-  final List<Post> posts;
-  final List<Todo> todos;
+  List<Post> posts;
+  List<Todo> todos;
   final bool hasReachedMax;
   final int id;
 

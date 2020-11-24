@@ -5,4 +5,8 @@ abstract class PostEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class PostFetched extends PostEvent {}
+class PostFetched extends PostEvent {
+  final int variable;
+
+  PostFetched({this.variable});
+}
